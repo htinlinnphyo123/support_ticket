@@ -19,7 +19,7 @@ class TicketFactory extends Factory
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraphs(3, true),
-            'status' => fake()->randomElement(\App\Enums\TicketStatus::cases())->value,
+            'status' => \App\Enums\TicketStatus::Open->value,
             'file_type' => null,
             'link' => null,
             'creator_id' => \App\Models\User::factory(),

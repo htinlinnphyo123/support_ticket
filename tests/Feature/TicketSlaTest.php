@@ -48,20 +48,22 @@ class TicketSlaTest extends TestCase
         $this->assertEquals($ticket->created_at->addHours(TicketPriority::High->slaHours())->startOfMinute()->format('Y-m-d H:i'), $ticket->fresh()->due_date->startOfMinute()->format('Y-m-d H:i'));
     }
 
-    // public function test_sla_status_resolves_correctly_based_on_time()
-    // {
-    //     Carbon::setTestNow(now());
+    public function test_sla_status_resolves_correctly_based_on_time()
+    {
+        Carbon::setTestNow(now());
 
-    //     $ticket = Ticket::factory()->create([
-    //         'priority' => TicketPriority::High->value,
-    //         'due_date' => now()->addHours(1)
-    //     ]);
-    //     $this->assertEquals(SlaStatus::DueSoon, $ticket->sla_status);
+        $ticket = Ticket::factory()->create([
+            'priority' => TicketPriority::High->value,
+            'due_date' => now()->addHours(1)
+        ]);
+        $this->assertEquals(SlaStatus::DueSoon, $ticket->sla_status);
 
-    //     $ticket->due_date = now()->subMinutes(10);
+        $ticket->update([
+            'due_date' => now()->subMinutes(10),
+        ]);
         
-    //     $this->assertEquals(SlaStatus::Overdue, $ticket->sla_status);
+        $this->assertEquals(SlaStatus::Overdue, $ticket->sla_status);
         
-    //     Carbon::setTestNow();
-    // }
+        Carbon::setTestNow();
+    }
 }
