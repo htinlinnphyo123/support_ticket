@@ -38,6 +38,7 @@ class TicketResource extends JsonResource
             'due_date' => $this->due_date ? $this->due_date->diffForHumans() : null,
             'creator_id' => $this->creator_id,
             'agent_id' => $this->agent_id,
+            'agent' => $this->whenLoaded('agent'),
             'creator_name' => $this->whenLoaded('creator')->name,
             'agent_name' => $this->whenLoaded('agent')?->name,
             'organisation_name' => $this->whenLoaded('creator')->organisation->name,

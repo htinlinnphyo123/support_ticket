@@ -84,7 +84,9 @@ const agentOptions = props.agents?.length
         <template #header>
             <div class="flex items-center justify-between">
                 <PageTitle>Support Tickets</PageTitle>
-                <Link :href="route('tickets.create')" class="bg-blue-600 outline-none text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
+                <Link
+                    v-if="$page.props.auth.user.type=='employee'" 
+                    :href="route('tickets.create')" class="bg-blue-600 outline-none text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
                     Create Ticket
                 </Link>
             </div>

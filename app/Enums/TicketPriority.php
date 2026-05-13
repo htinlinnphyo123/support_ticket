@@ -39,7 +39,7 @@ enum TicketPriority: string
         return match($this) {
             self::Low => 48,
             self::Medium => 24,
-            self::High => 4,
+            self::High => 1,
         };
     }
 }
