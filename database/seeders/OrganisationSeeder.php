@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Enums\UserType;
 use App\Models\Organisation;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class OrganisationSeeder extends Seeder
 {
@@ -17,14 +17,14 @@ class OrganisationSeeder extends Seeder
         // First, create a system admin / super agent to be the creator of organisations
         $superAgent = User::factory()->create([
             'name' => 'Super Admin',
-            'type' => \App\Enums\UserType::Agent->value,
+            'type' => UserType::Agent->value,
             'organisation_id' => null,
         ]);
 
         for ($i = 1; $i <= 5; $i++) {
             Organisation::factory()->create([
-                'name' => 'Organisation ' . $i,
-                'description' => 'Description ' . $i,
+                'name' => 'Organisation '.$i,
+                'description' => 'Description '.$i,
                 'status' => 'active',
                 'created_by' => $superAgent->id,
             ]);

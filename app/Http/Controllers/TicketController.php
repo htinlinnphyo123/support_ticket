@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use App\Http\Requests\TicketRequest;
+use App\Http\Resources\TicketResource;
+use App\Models\Organisation;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Models\Organisation;
 use App\Services\TicketService;
-use App\Http\Resources\TicketResource;
-use App\Enums\TicketStatus;
-use App\Enums\TicketPriority;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -22,6 +22,7 @@ class TicketController extends Controller
     {
         Gate::authorize('viewAny', Ticket::class);
         $tickets = $this->ticketService->getTicketsForUser($request->user(), $request->all());
+
         return Inertia::render('Tickets/Index', [
             'tickets' => TicketResource::collection($tickets),
             'filters' => $request->only(['search', 'status', 'priority', 'organisation_id', 'agent_id']),
@@ -35,6 +36,7 @@ class TicketController extends Controller
     public function create()
     {
         Gate::authorize('create', Ticket::class);
+
         return Inertia::render('Tickets/Create');
     }
 
@@ -49,21 +51,21 @@ class TicketController extends Controller
     public function show(Ticket $ticket)
     {
         Gate::authorize('view', $ticket);
-        
+
         $isAgent = request()->user()->type->value === 'agent';
-        
+
         $ticket->load([
-            'creator.organisation', 
+            'creator.organisation',
             'agent',
             'comments' => function ($query) use ($isAgent) {
-                if (!$isAgent) {
+                if (! $isAgent) {
                     $query->where('is_public', true);
                 }
                 $query->oldest();
             },
-            'comments.creator:id,name,type'
+            'comments.creator:id,name,type',
         ]);
-        
+
         return Inertia::render('Tickets/Show', [
             'ticket' => (new TicketResource($ticket))->resolve(),
             'agents' => request()->user()->type->value === 'agent' ? User::where('type', 'agent')->get(['id', 'name']) : [],

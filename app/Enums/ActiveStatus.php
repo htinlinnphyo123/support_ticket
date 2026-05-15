@@ -9,7 +9,7 @@ enum ActiveStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Active => 'text-green-500',
             self::Inactive => 'text-red-500',
         };
@@ -17,7 +17,7 @@ enum ActiveStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Active => 'Active',
             self::Inactive => 'Inactive',
         };

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ActiveStatus;
+use App\Enums\UserType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('phone')->nullable();
-            $table->string('type')->default(\App\Enums\UserType::Employee->value)->index();
-            $table->string('status')->default(\App\Enums\ActiveStatus::Active->value)->index();
+            $table->string('type')->default(UserType::Employee->value)->index();
+            $table->string('status')->default(ActiveStatus::Active->value)->index();
             $table->foreignId('organisation_id')->nullable()->constrained('organisations')->nullOnDelete();
             $table->softDeletes();
         });

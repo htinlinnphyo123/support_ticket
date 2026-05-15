@@ -3,14 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use App\Enums\ActiveStatus;
+use App\Enums\UserType;
+use App\Models\Scopes\UpdatedAtDescScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\UpdatedAtDescScope;
 
 class User extends Authenticatable
 {
@@ -51,17 +51,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'type' => \App\Enums\UserType::class,
-            'status' => \App\Enums\ActiveStatus::class,
+            'type' => UserType::class,
+            'status' => ActiveStatus::class,
         ];
     }
+
     public function organisation(): BelongsTo
     {
         return $this->belongsTo(Organisation::class);
     }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new UpdatedAtDescScope);
     }
-
 }

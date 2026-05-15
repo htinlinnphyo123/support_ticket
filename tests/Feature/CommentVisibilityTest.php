@@ -27,14 +27,14 @@ class CommentVisibilityTest extends TestCase
             'ticket_id' => $ticket->id,
             'creator_id' => $agent->id,
             'description' => 'This is a public reply',
-            'is_public' => true
+            'is_public' => true,
         ]);
 
         $internalNote = Comment::create([
             'ticket_id' => $ticket->id,
             'creator_id' => $agent->id,
             'description' => 'This is a secret note',
-            'is_public' => false
+            'is_public' => false,
         ]);
 
         $response = $this->actingAs($employee)->get(route('tickets.show', $ticket));
@@ -55,7 +55,7 @@ class CommentVisibilityTest extends TestCase
             'ticket_id' => $ticket->id,
             'creator_id' => $agent->id,
             'description' => 'This is a secret note',
-            'is_public' => false
+            'is_public' => false,
         ]);
 
         $response = $this->actingAs($agent)->get(route('tickets.show', $ticket));

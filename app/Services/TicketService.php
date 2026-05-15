@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,13 +20,13 @@ class TicketService
                 $q->where('organisation_id', $user->organisation_id);
             });
         } else {
-            if (!empty($filters['organisation_id'])) {
+            if (! empty($filters['organisation_id'])) {
                 $query->whereHas('creator', function (Builder $q) use ($filters) {
                     $q->where('organisation_id', $filters['organisation_id']);
                 });
             }
 
-            if (!empty($filters['agent_id'])) {
+            if (! empty($filters['agent_id'])) {
                 if ($filters['agent_id'] === 'unassigned') {
                     $query->whereNull('agent_id');
                 } else {
@@ -32,15 +34,15 @@ class TicketService
                 }
             }
         }
-          if (!empty($filters['status'])) {
-              $query->where('status', $filters['status']);
-          }
-          if (!empty($filters['priority'])) {
-              $query->where('priority', $filters['priority']);
-          }
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+        if (! empty($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
 
-        if (!empty($filters['search'])) {
-            $query->where('title', 'like', '%' . $filters['search'] . '%');
+        if (! empty($filters['search'])) {
+            $query->where('title', 'like', '%'.$filters['search'].'%');
         }
 
         return $query->latest()->paginate(10)->withQueryString();
@@ -53,24 +55,24 @@ class TicketService
 
         if ($user->type->value === 'agent') {
             // Agent sees global stats
-            $stats['total_active'] = Ticket::whereNotIn('status', [\App\Enums\TicketStatus::Resolved->value, \App\Enums\TicketStatus::Closed->value])->count();
-            $stats['unassigned'] = Ticket::whereNotIn('status', [\App\Enums\TicketStatus::Resolved->value, \App\Enums\TicketStatus::Closed->value])->whereNull('agent_id')->count();
-            $stats['overdue'] = Ticket::whereNotIn('status', [\App\Enums\TicketStatus::Resolved->value, \App\Enums\TicketStatus::Closed->value])
-                                      ->whereNotNull('due_date')
-                                      ->where('due_date', '<', now())->count();
+            $stats['total_active'] = Ticket::whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])->count();
+            $stats['unassigned'] = Ticket::whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])->whereNull('agent_id')->count();
+            $stats['overdue'] = Ticket::whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])
+                ->whereNotNull('due_date')
+                ->where('due_date', '<', now())->count();
         } else {
             // Employee sees org-specific stats
             $orgId = $user->organisation_id;
-            
+
             $stats['total_active'] = Ticket::whereHas('creator', function (Builder $q) use ($orgId) {
                 $q->where('organisation_id', $orgId);
-            })->whereNotIn('status', [\App\Enums\TicketStatus::Resolved->value, \App\Enums\TicketStatus::Closed->value])->count();
-            
+            })->whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])->count();
+
             $stats['recently_resolved'] = Ticket::whereHas('creator', function (Builder $q) use ($orgId) {
                 $q->where('organisation_id', $orgId);
-            })->where('status', \App\Enums\TicketStatus::Resolved->value)
-              ->where('updated_at', '>=', now()->subDays(30))->count();
-            
+            })->where('status', TicketStatus::Resolved->value)
+                ->where('updated_at', '>=', now()->subDays(30))->count();
+
             // Limit recent tickets to their org
             $recentTicketsQuery->whereHas('creator', function (Builder $q) use ($orgId) {
                 $q->where('organisation_id', $orgId);
@@ -79,7 +81,7 @@ class TicketService
 
         return [
             'stats' => $stats,
-            'recent_tickets' => $recentTicketsQuery->get()
+            'recent_tickets' => $recentTicketsQuery->get(),
         ];
     }
 
@@ -88,8 +90,8 @@ class TicketService
         $data['creator_id'] = $user->id;
 
         // Determine default priority if none is provided
-        $priority = $data['priority'] ?? \App\Enums\TicketPriority::Medium->value;
-        $priorityEnum = \App\Enums\TicketPriority::tryFrom($priority);
+        $priority = $data['priority'] ?? TicketPriority::Medium->value;
+        $priorityEnum = TicketPriority::tryFrom($priority);
 
         $hoursToAdd = $priorityEnum->slaHours();
 
@@ -106,14 +108,15 @@ class TicketService
     {
         // If priority is updated and it's different, recalculate the SLA based on the creation time
         if (isset($data['priority']) && $data['priority'] !== $ticket->priority->value) {
-            $priorityEnum = \App\Enums\TicketPriority::tryFrom($data['priority']);
+            $priorityEnum = TicketPriority::tryFrom($data['priority']);
             $hoursToAdd = $priorityEnum->slaHours();
-            
+
             // Re-calculate the due date relative to when the ticket was originally created
             $data['due_date'] = $ticket->created_at->addHours($hoursToAdd);
         }
 
         $ticket->update($data);
+
         return $ticket;
     }
 
@@ -121,12 +124,12 @@ class TicketService
     {
         $file = $data['file'];
         $path = $file->store('tickets', 'public');
-        
+
         $data['link'] = Storage::url($path);
         $data['file_type'] = $file->getClientOriginalExtension();
-        
+
         unset($data['file']);
-        
+
         return $data;
     }
 }

@@ -11,7 +11,7 @@ enum TicketStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Open => 'blue',
             self::InProgress => 'yellow',
             self::Resolved => 'green',
@@ -21,7 +21,7 @@ enum TicketStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Open => 'Open',
             self::InProgress => 'In Progress',
             self::Resolved => 'Resolved',
@@ -31,7 +31,7 @@ enum TicketStatus: string
 
     public static function toOptions(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'value' => $case->value,
             'name' => $case->label(),
         ], self::cases());

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\SlaStatus;
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use App\Models\Scopes\UpdatedAtDescScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,8 +29,8 @@ class Ticket extends Model
     protected function casts(): array
     {
         return [
-            'status' => \App\Enums\TicketStatus::class,
-            'priority' => \App\Enums\TicketPriority::class,
+            'status' => TicketStatus::class,
+            'priority' => TicketPriority::class,
             'due_date' => 'datetime',
         ];
     }
@@ -52,34 +55,34 @@ class Ticket extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function getSlaStatusAttribute(): \App\Enums\SlaStatus
+    public function getSlaStatusAttribute(): SlaStatus
     {
-        if (in_array($this->status, [\App\Enums\TicketStatus::Resolved, \App\Enums\TicketStatus::Closed])) {
-            return \App\Enums\SlaStatus::Completed;
+        if (in_array($this->status, [TicketStatus::Resolved, TicketStatus::Closed])) {
+            return SlaStatus::Completed;
         }
 
-        if (!$this->due_date) {
-            return \App\Enums\SlaStatus::OnTrack;
+        if (! $this->due_date) {
+            return SlaStatus::OnTrack;
         }
 
         if (now()->greaterThan($this->due_date)) {
-            return \App\Enums\SlaStatus::Overdue;
+            return SlaStatus::Overdue;
         }
 
         $hoursRemaining = now()->diffInHours($this->due_date, false);
 
         $isDueSoon = match ($this->priority) {
-            \App\Enums\TicketPriority::High => $hoursRemaining < 1,
-            \App\Enums\TicketPriority::Medium => $hoursRemaining < 4,
-            \App\Enums\TicketPriority::Low => $hoursRemaining < 12,
+            TicketPriority::High => $hoursRemaining < 1,
+            TicketPriority::Medium => $hoursRemaining < 4,
+            TicketPriority::Low => $hoursRemaining < 12,
             default => false,
         };
 
-        return $isDueSoon ? \App\Enums\SlaStatus::DueSoon : \App\Enums\SlaStatus::OnTrack;
+        return $isDueSoon ? SlaStatus::DueSoon : SlaStatus::OnTrack;
     }
 
     protected static function booted(): void
     {
         static::addGlobalScope(new UpdatedAtDescScope);
-    }    
+    }
 }

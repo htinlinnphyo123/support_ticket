@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Models\Scopes\UpdatedAtDescScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Scopes\UpdatedAtDescScope;
 
 class Organisation extends Model
 {
@@ -21,7 +22,7 @@ class Organisation extends Model
     protected function casts(): array
     {
         return [
-            'status' => \App\Enums\ActiveStatus::class,
+            'status' => ActiveStatus::class,
         ];
     }
 

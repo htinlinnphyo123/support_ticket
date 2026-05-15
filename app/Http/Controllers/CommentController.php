@@ -14,7 +14,7 @@ class CommentController extends Controller
         Gate::authorize('view', $ticket); // Ensure they can even see the ticket to comment on it
 
         $data = $request->validated();
-        
+
         // Force employees to always create public comments
         if ($request->user()->type->value === 'employee') {
             $data['is_public'] = true;

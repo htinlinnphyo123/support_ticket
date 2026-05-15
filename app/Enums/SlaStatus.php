@@ -11,7 +11,7 @@ enum SlaStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::OnTrack => 'green',
             self::DueSoon => 'yellow',
             self::Overdue => 'red',
@@ -21,7 +21,7 @@ enum SlaStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::OnTrack => 'On Track',
             self::DueSoon => 'Due Soon',
             self::Overdue => 'Overdue',

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TicketService;
 use App\Http\Resources\TicketResource;
-use Inertia\Inertia;
+use App\Services\TicketService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {

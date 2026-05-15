@@ -10,7 +10,7 @@ enum TicketPriority: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Low => 'dark',
             self::Medium => 'yellow',
             self::High => 'red',
@@ -19,7 +19,7 @@ enum TicketPriority: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Low => 'Low',
             self::Medium => 'Medium',
             self::High => 'High',
@@ -28,7 +28,7 @@ enum TicketPriority: string
 
     public static function toOptions(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'value' => $case->value,
             'name' => $case->label(),
         ], self::cases());
@@ -36,7 +36,7 @@ enum TicketPriority: string
 
     public function slaHours(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Low => 48,
             self::Medium => 24,
             self::High => 1,

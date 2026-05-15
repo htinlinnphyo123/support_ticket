@@ -2,10 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
+use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ticket>
+ * @extends Factory<Ticket>
  */
 class TicketFactory extends Factory
 {
@@ -19,12 +23,12 @@ class TicketFactory extends Factory
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraphs(3, true),
-            'status' => \App\Enums\TicketStatus::Open->value,
+            'status' => TicketStatus::Open->value,
             'file_type' => null,
             'link' => null,
-            'creator_id' => \App\Models\User::factory(),
-            'priority' => fake()->randomElement(\App\Enums\TicketPriority::cases())->value,
-            'agent_id' => \App\Models\User::factory(),
+            'creator_id' => User::factory(),
+            'priority' => fake()->randomElement(TicketPriority::cases())->value,
+            'agent_id' => User::factory(),
         ];
     }
 }

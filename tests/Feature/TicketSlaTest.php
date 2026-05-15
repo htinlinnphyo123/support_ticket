@@ -22,12 +22,12 @@ class TicketSlaTest extends TestCase
     {
         $org = Organisation::factory()->create();
         $user = User::factory()->create(['type' => UserType::Employee->value, 'organisation_id' => $org->id, 'status' => ActiveStatus::Active->value]);
-        
-        $service = new TicketService();
+
+        $service = new TicketService;
         $ticket = $service->createTicket([
             'title' => 'Test',
             'description' => 'Test',
-            'priority' => TicketPriority::High->value
+            'priority' => TicketPriority::High->value,
         ], $user);
 
         $expected = now()->addHours(TicketPriority::High->slaHours())->startOfMinute();
@@ -42,7 +42,7 @@ class TicketSlaTest extends TestCase
             'created_at' => now()->subHours(2),
         ]);
 
-        $service = new TicketService();
+        $service = new TicketService;
         $service->updateTicket($ticket, ['priority' => TicketPriority::High->value], $agent);
 
         $this->assertEquals($ticket->created_at->addHours(TicketPriority::High->slaHours())->startOfMinute()->format('Y-m-d H:i'), $ticket->fresh()->due_date->startOfMinute()->format('Y-m-d H:i'));
@@ -54,16 +54,16 @@ class TicketSlaTest extends TestCase
 
         $ticket = Ticket::factory()->create([
             'priority' => TicketPriority::High->value,
-            'due_date' => now()->addHours(1)
+            'due_date' => now()->addHours(1),
         ]);
         $this->assertEquals(SlaStatus::DueSoon, $ticket->sla_status);
 
         $ticket->update([
             'due_date' => now()->subMinutes(10),
         ]);
-        
+
         $this->assertEquals(SlaStatus::Overdue, $ticket->sla_status);
-        
+
         Carbon::setTestNow();
     }
 }

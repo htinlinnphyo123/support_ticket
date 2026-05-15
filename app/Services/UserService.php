@@ -32,6 +32,7 @@ class UserService
         }
 
         $data['password'] = Hash::make($data['password']);
+
         return User::create($data);
     }
 
@@ -46,13 +47,14 @@ class UserService
             }
         }
 
-        if (isset($data['password']) && !empty($data['password'])) {
+        if (isset($data['password']) && ! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
         }
 
         $user->update($data);
+
         return $user;
     }
 
